@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { MdArrowOutward, MdCopyright, MdHome, MdMap, MdFileDownload, MdPlayArrow, MdSkipNext, MdRefresh, MdAssignment } from "react-icons/md";
+import { MdArrowOutward, MdCopyright, MdHome, MdMap, MdFileDownload, MdPlayArrow, MdSkipNext, MdRefresh, MdAssignment, MdVolumeUp, MdVolumeOff } from "react-icons/md";
 import { FaHome, FaTree, FaWind, FaHammer, FaAward, FaGraduationCap, FaHandsHelping, FaCog, FaUnlockAlt } from "react-icons/fa";
 import TechStack from "./TechStack";
 import VillageScene from "../canvas/VillageScene";
@@ -76,6 +76,7 @@ export default function VillageDashboard() {
   const [selectedProject, setSelectedProject] = useState<number>(0);
   const [questTitle, setQuestTitle] = useState<string>("Active Quest: Explore the Village");
   const [isCrtOn, setIsCrtOn] = useState<boolean>(false);
+  const [isVoiceEnabled, setIsVoiceEnabled] = useState<boolean>(false);
 
   // Zustand Store
   const { phase, activeChallenge, completedChallenges, setPhase, enterZone, leaveZone, solveChallenge, resetGame } = useGameStore();
@@ -88,12 +89,58 @@ export default function VillageDashboard() {
   const [blueprintDecryptPercent, setBlueprintDecryptPercent] = useState<number>(0);
   const [isDecrypting, setIsDecrypting] = useState<boolean>(false);
 
+  // Text-to-speech speaker utility
+  const speakText = (text: string) => {
+    if (!isVoiceEnabled || !window.speechSynthesis) return;
+
+    // Halt previous speech synthesis
+    window.speechSynthesis.cancel();
+
+    // Strip "Manager:" tags and quotes
+    const cleanText = text
+      .replace(/Manager:\s*'/g, "")
+      .replace(/'/g, "")
+      .replace(/🏆/g, "")
+      .replace(/🏆/g, "");
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.rate = 1.0;
+    utterance.pitch = 0.95; // Slightly deeper guide voice
+
+    const voices = window.speechSynthesis.getVoices();
+    const chosenVoice = voices.find((v) => v.lang.startsWith("en")) || null;
+    if (chosenVoice) {
+      utterance.voice = chosenVoice;
+    }
+
+    window.speechSynthesis.speak(utterance);
+  };
+
   // Trigger game overlay when activeSection changes in PLAYING mode
   useEffect(() => {
     if (phase === "PLAYING" && activeSection !== "overview") {
       enterZone(activeSection);
     }
   }, [activeSection, phase, enterZone]);
+
+  // Sync spoken dialogue when dialogue text updates
+  useEffect(() => {
+    if (phase === "PLAYING") {
+      if (activeChallenge) {
+        // Speak challenge instructions
+        let challengeText = "";
+        if (activeChallenge === "about") challengeText = "Credential scanner active. Please initiate security bioscan to unseal cottage biometrics.";
+        if (activeChallenge === "tech") challengeText = "Skill Orchard challenge active. Harvest three skill nodes to verify technical stacks.";
+        if (activeChallenge === "experience") challengeText = "Windmill timeline gear sync active. Rotate the gear cogs to synchronize internship logs.";
+        if (activeChallenge === "projects") challengeText = "Workshop blueprints archive active. Select a project blueprint and initiate code decryption.";
+        speakText(challengeText);
+      } else {
+        // Speak NPC general dialogue
+        speakText(getNpcDialogue());
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSection, activeChallenge, phase, isVoiceEnabled]);
 
   // Update Quest status tags
   useEffect(() => {
@@ -177,7 +224,7 @@ export default function VillageDashboard() {
       case "about":
         return "Manager: 'Inside this Cozy Cottage lies Aayush's biography databank. Perform a security credential bioscan to verify your authorization and unseal his academic profile!'";
       case "tech":
-        return "Manager: 'Welcome to the Skill Orchard! Grab and harvest at least 3 skill fruits to confirm his engineering stack and activate the Orchard physics bubble canvas.'";
+        return "Manager: 'Welcome to the Skill Orchard! Grab and harvest at least 3 skill fruits to confirm his technical stack and activate the Orchard physics bubble canvas.'";
       case "experience":
         return "Manager: 'The Windmill registers time records. Align the timeline gear cogs to synchronize clock logs and unlock his professional internship history!'";
       case "projects":
@@ -188,7 +235,7 @@ export default function VillageDashboard() {
   };
 
   // ----------------------------------------------------
-  // RENDER PHASE: 1. INTRO CINEMATIC ARCADE SCREEN
+  // RENDER PHASE: 1. INTRO SCREEN
   // ----------------------------------------------------
   if (phase === "INTRO") {
     return (
@@ -196,18 +243,16 @@ export default function VillageDashboard() {
         <Cursor />
         <div className="arcade-cabinet">
           <div className="arcade-crt-effect"></div>
-          <div className="hud-header-glitch">AAYUSH_SIMULATOR_OS v2.6</div>
-          <h1 className="arcade-title">AAYUSH SHELAR</h1>
-          <h3 className="arcade-subtitle">AI & Embedded Systems Engineer</h3>
-          
-          <div className="arcade-status-grid">
-            <div className="status-stat"><span>CPU CORES</span><span>8x THREADS</span></div>
-            <div className="status-stat"><span>SYS_STATUS</span><span>ONLINE</span></div>
-            <div className="status-stat"><span>LOC_MODEL</span><span>ACTIVE</span></div>
-          </div>
+          <div className="arcade-tag">3D PLAYABLE PORTFOLIO</div>
+          <h1 className="arcade-title" style={{ marginTop: "10px" }}>AAYUSH SHELAR</h1>
+          <h3 className="arcade-subtitle" style={{ color: "#ca8a04", fontWeight: "bold" }}>
+            AI & Embedded Systems Engineer
+          </h3>
+
+          <div className="divider-gold" style={{ margin: "20px auto", width: "80%" }}></div>
 
           <p className="arcade-desc">
-            Explore Aayush's professional milestones inside a 3D isometric village. Control your avatar using <strong>WASD / Arrow Keys</strong>, or click the signposts to travel, completing challenges at cottages and windmills to unseal achievements.
+            Welcome, recruiter! Walk through this 3D cartoon village simulator to explore my milestones. Use the **WASD / Arrow keys** to control your character, or click the signposts to navigate. Meet the **Hiring Manager NPC** at the square to get started!
           </p>
 
           <div className="arcade-btn-group">
@@ -544,7 +589,7 @@ export default function VillageDashboard() {
         </ul>
       </nav>
 
-      {/* Cozy Quest Diary Panel (Replaces cyber log ticker) */}
+      {/* Cozy Quest Diary Panel (Right Column) */}
       <div className="cozy-quest-diary" data-cursor="disable">
         <div className="diary-header">
           <MdAssignment /> ACTIVE QUEST DIARY
@@ -590,9 +635,9 @@ export default function VillageDashboard() {
                 </div>
                 {bioScanProgress >= 100 ? (
                   <div className="challenge-unsealed-content">
-                    <div className="rpg-section-card" style={{ background: "#ffffff" }}>
-                      <h4 style={{ color: "#7c2d12", margin: "0 0 5px 0" }}><FaGraduationCap /> B.TECH EDUCATION</h4>
-                      <p style={{ fontSize: "12px", color: "#5c3d2e", margin: 0 }}>
+                    <div className="rpg-section-card" style={{ background: "#ffffff", padding: "12px", border: "1px solid #e6d8b8" }}>
+                      <h4 style={{ color: "#7c2d12", margin: "0 0 5px 0", fontSize: "13px" }}><FaGraduationCap /> B.TECH EDUCATION</h4>
+                      <p style={{ fontSize: "11px", color: "#5c3d2e", margin: 0, lineHeight: "1.4" }}>
                         Electronic & Computer Engineering at SITCOE. GPA: 6.73 / 10.
                       </p>
                     </div>
@@ -648,7 +693,7 @@ export default function VillageDashboard() {
             {activeChallenge === "experience" && (
               <>
                 <h3 className="challenge-title">💨 WINDMILL CHALLENGE: TIMELINE GEAR SYNC</h3>
-                <h3 className="challenge-title" style={{ fontSize: "12px", marginTop: "-8px", border: "none" }}>SEDEMAC INTERN LOG: 2026</h3>
+                <h3 className="challenge-title" style={{ fontSize: "11px", marginTop: "-8px", border: "none", color: "#b45309" }}>SEDEMAC INTERN LOG: 2026</h3>
                 <p className="challenge-desc">
                   Stabilize the rotating windmill timeline gears. Spin gears to match clock metrics.
                 </p>
@@ -741,6 +786,25 @@ export default function VillageDashboard() {
         <div className="dialogue-header">
           <div className="dialogue-dot animate-pulse"></div>
           <span>VILLAGE VISUAL DIALOGUE LOG</span>
+          
+          {/* TTS Speech Synthesis Volume control toggle */}
+          <button 
+            onClick={() => setIsVoiceEnabled(!isVoiceEnabled)}
+            className="dialogue-voice-btn"
+            style={{ marginLeft: "auto", background: "transparent", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px" }}
+          >
+            {isVoiceEnabled ? (
+              <>
+                <MdVolumeUp style={{ color: "#22c55e", fontSize: "16px" }} />
+                <span style={{ fontSize: "8px", color: "#22c55e", fontWeight: "bold" }}>VOICE: ON</span>
+              </>
+            ) : (
+              <>
+                <MdVolumeOff style={{ color: "#9ca3af", fontSize: "16px" }} />
+                <span style={{ fontSize: "8px", color: "#9ca3af" }}>VOICE: OFF</span>
+              </>
+            )}
+          </button>
         </div>
         <div className="dialogue-content">
           <p className="dialogue-text">

@@ -1523,6 +1523,16 @@
   text-align: justify;
 }
 
+.dialogue-voice-btn {
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.dialogue-voice-btn:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+}
+
 
 
 
