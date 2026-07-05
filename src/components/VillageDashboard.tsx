@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { MdArrowOutward, MdCopyright, MdHome, MdMap, MdFileDownload } from "react-icons/md";
 import { FaHome, FaTree, FaWind, FaHammer, FaAward, FaGraduationCap, FaHandsHelping } from "react-icons/fa";
 import TechStack from "./TechStack";
@@ -57,18 +57,67 @@ const projectTelemetry = [
     title: "Aura Wellness Matrix",
     category: "Machine Learning / Mobile Health",
     problem: "Users need secure mood logs and anomaly tracking on mobile devices without sending private logs to external clouds.",
-    solution: "Deployed a Scikit-learn model locally inside a React Native wrapper, communicating with a local FastAPI server to detect anomalies and categorize mental health scores safely.",
+    solution: "Integrated a Scikit-learn model locally inside a React Native wrapper, communicating with a local FastAPI server to detect anomalies and categorize mental health scores safely.",
     tools: "Python, Scikit-learn, FastAPI, React Native",
     link: "https://github.com/Aayush-pixel29/aura-app",
     image: "/aura-app.jpg",
   },
 ];
 
+const telemetryLogPool = [
+  "[SYS] Loading YOLOv8 weights... Success",
+  "[MAITRI] Monitoring sentiment vectors... Optimal",
+  "[IoT] Cable sensor matrix ping... Status 200",
+  "[YOLO] Classified Cottage: 0.99 Confidence",
+  "[YOLO] Classified Windmill: 0.98 Confidence",
+  "[SYS] Core temperature stabilized at 42°C",
+  "[ML] Pipeline throughput: 62.4 FPS",
+  "[SYS] Memory Allocation: 74% [OK]",
+  "[AVR] Potential Divider calibration... Ready",
+  "[NLP] Dialogue agents online. RAG DB loaded.",
+];
+
 export default function VillageDashboard() {
   const [activeSection, setActiveSection] = useState<string>("overview");
   const [selectedProject, setSelectedProject] = useState<number>(0);
   const [questTitle, setQuestTitle] = useState<string>("Active Quest: Explore the Village");
+  
+  // HUD Glitch filter state
+  const [isCrtOn, setIsCrtOn] = useState<boolean>(false);
+  
+  // Ticker Logs
+  const [tickerLogs, setTickerLogs] = useState<string[]>([
+    "[SYS] Loading YOLOv8 weights... Success",
+    "[MAITRI] Monitoring sentiment vectors... Optimal",
+    "[IoT] Cable sensor matrix ping... Status 200",
+  ]);
 
+  // Terminal State
+  const [terminalInput, setTerminalInput] = useState<string>("");
+  const [terminalLogs, setTerminalLogs] = useState<string[]>([
+    "Initializing Aayush_OS v2.6...",
+    "Capabilities: Computer Vision, Embedded IoT, Local-first AI.",
+    "Type 'help' for databank system commands.",
+  ]);
+  
+  const terminalEndRef = useRef<HTMLDivElement>(null);
+
+  // Telemetry stream interval
+  useEffect(() => {
+    const logInterval = setInterval(() => {
+      const randomLog = telemetryLogPool[Math.floor(Math.random() * telemetryLogPool.length)];
+      setTickerLogs((prev) => {
+        const next = [...prev, randomLog];
+        if (next.length > 8) {
+          next.shift();
+        }
+        return next;
+      });
+    }, 2800);
+    return () => clearInterval(logInterval);
+  }, []);
+
+  // Sync quest status titles
   useEffect(() => {
     switch (activeSection) {
       case "overview":
@@ -91,8 +140,82 @@ export default function VillageDashboard() {
     }
   }, [activeSection]);
 
+  // Terminal scroll helper
+  useEffect(() => {
+    if (terminalEndRef.current) {
+      terminalEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [terminalLogs]);
+
+  // Interactive Command Terminal logic
+  const handleCommand = (e: React.FormEvent) => {
+    e.preventDefault();
+    const cmd = terminalInput.trim();
+    if (!cmd) return;
+
+    const trimmed = cmd.toLowerCase();
+    let response: string[] = [];
+
+    if (trimmed === "help") {
+      response = [
+        "Available operations:",
+        "  help         - Show OS operations",
+        "  cat resume   - Output academic & experience logs",
+        "  status       - Inspect mechatronic core diagnostics",
+        "  goto <zone>  - Relocate: cottage | orchard | windmill | workshop | square",
+        "  clear        - Flush terminal buffer",
+      ];
+    } else if (trimmed === "cat resume") {
+      response = [
+        "AAYUSH SHELAR - ELECTRONICS & COMPUTER ENGINEER",
+        "GPA Coef: 6.73 / 10.00",
+        "Timeline entries:",
+        "  - SEDEMAC Mechatronics Ltd. [Support Engineer Intern, 2026]",
+        "  - Rapid System [Developer Intern, 2024]",
+        "Community: Event Head at DSC ECESA (1500+ Peers coached)",
+      ];
+    } else if (trimmed === "status") {
+      response = [
+        "OS Telemetry Status:",
+        "  MEM_ALLOC       : 74% [OK]",
+        "  SIGNAL_STRENGTH : 92% [OPTIMAL]",
+        "  CORE_TEMP       : 42°C [STABLE]",
+        "  LOCAL_MODEL     : ACTIVE (OFFLINE)",
+      ];
+    } else if (trimmed.startsWith("goto ")) {
+      const zone = trimmed.replace("goto ", "").trim();
+      if (zone === "cottage" || zone === "about") {
+        setActiveSection("about");
+        response = ["Relocating vector to [🏡 COZY COTTAGE]..."];
+      } else if (zone === "orchard" || zone === "tech" || zone === "skills") {
+        setActiveSection("tech");
+        response = ["Relocating vector to [🌲 SKILL ORCHARD]..."];
+      } else if (zone === "windmill" || zone === "experience") {
+        setActiveSection("experience");
+        response = ["Relocating vector to [💨 WINDMILL LOGS]..."];
+      } else if (zone === "workshop" || zone === "projects" || zone === "work") {
+        setActiveSection("projects");
+        response = ["Relocating vector to [🔨 WORKSHOP BLUEPRINTS]..."];
+      } else if (zone === "square" || zone === "overview" || zone === "map") {
+        setActiveSection("overview");
+        response = ["Relocating vector to [🗺️ VILLAGE SQUARE]..."];
+      } else {
+        response = [`Sector [${zone}] unrecognized. Select active nodes.`];
+      }
+    } else if (trimmed === "clear") {
+      setTerminalLogs([]);
+      setTerminalInput("");
+      return;
+    } else {
+      response = [`Command '${cmd}' not recognized. Type 'help' for instructions.`];
+    }
+
+    setTerminalLogs((prev) => [...prev, `> ${cmd}`, ...response]);
+    setTerminalInput("");
+  };
+
   return (
-    <div className="village-main">
+    <div className={`village-main ${isCrtOn ? "crt-filter" : ""}`}>
       <Cursor />
       <SocialIcons />
       <VillageScene activeSection={activeSection} />
@@ -104,7 +227,13 @@ export default function VillageDashboard() {
           <span>{questTitle}</span>
         </div>
         <div className="hud-player-status" data-cursor="disable">
-          <span className="availability-pulse">🟢 Available for Full-Time Roles</span>
+          <button 
+            className={`availability-pulse ${isCrtOn ? "crt-active-btn" : ""}`}
+            onClick={() => setIsCrtOn(!isCrtOn)}
+            style={{ cursor: "pointer", border: "none" }}
+          >
+            {isCrtOn ? "⚡ CRT MODE: ACTIVE" : "🟢 LOCAL HOST ONLY"}
+          </button>
           <span>HP [██████████] 100%</span>
           <span>LVL [99] ARCHITECT</span>
         </div>
@@ -149,6 +278,18 @@ export default function VillageDashboard() {
           </li>
         </ul>
       </nav>
+
+      {/* Vertical Telemetry Log Stream Ticker (Right Side) */}
+      <div className="telemetry-log-ticker" data-cursor="disable">
+        <div className="ticker-title">LIVE TELEMETRY STREAM</div>
+        <div className="ticker-scroll">
+          {tickerLogs.map((log, index) => (
+            <div key={index} className="ticker-line fade-in">
+              {log}
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* RPG Dialog Parchment Paper Terminal */}
       <main className="village-terminal">
@@ -363,13 +504,28 @@ export default function VillageDashboard() {
             <p className="rpg-subtitle">Case Study Blueprints</p>
             <div className="divider-gold"></div>
             <div className="parchment-body workshop-body">
-              {/* Left Selector signboards */}
+              {/* Left Selector signboards with corner crosshairs */}
               <div className="workshop-menu">
                 <ul>
                   {projectTelemetry.map((project, index) => (
-                    <li key={index} className={selectedProject === index ? "selected" : ""}>
-                      <button onClick={() => setSelectedProject(index)} data-cursor="disable">
-                        📄 BLUEPRINT 0{index + 1}
+                    <li key={index} className={`workshop-card-container ${selectedProject === index ? "selected" : ""}`}>
+                      <button 
+                        onClick={() => setSelectedProject(index)} 
+                        data-cursor="disable"
+                        className="vision-card"
+                      >
+                        {/* HUD crosshairs on corners */}
+                        <div className="ch ch-tl" />
+                        <div className="ch ch-tr" />
+                        <div className="ch ch-bl" />
+                        <div className="ch ch-br" />
+
+                        {/* YOLO annotation label overlay on hover */}
+                        <div className="yolo-tag">
+                          [CLASS: WORK_BLUEPRINT // CONF: 0.98]
+                        </div>
+
+                        <span>📄 BLUEPRINT 0{index + 1}</span>
                         <div>{project.title}</div>
                       </button>
                     </li>
@@ -417,6 +573,32 @@ export default function VillageDashboard() {
           </div>
         )}
       </main>
+
+      {/* Zone 3: Interactive Command Terminal (Bottom CLI HUD) */}
+      <div className="rpg-terminal-console" data-cursor="disable">
+        <div className="terminal-header">
+          <div className="terminal-dot"></div>
+          <span>Aayush_OS v2.6 // LOCAL INPUT MATRIX</span>
+        </div>
+        <div className="terminal-output">
+          {terminalLogs.map((log, index) => (
+            <div key={index} className="terminal-line">
+              {log}
+            </div>
+          ))}
+          <div ref={terminalEndRef} />
+        </div>
+        <form onSubmit={handleCommand} className="terminal-form">
+          <span className="prompt-symbol">&gt;</span>
+          <input
+            type="text"
+            value={terminalInput}
+            onChange={(e) => setTerminalInput(e.target.value)}
+            placeholder="Type 'help' to check databank operations..."
+            className="terminal-input"
+          />
+        </form>
+      </div>
 
       {/* Mailbox contact Dialog Box */}
       <footer className="village-footer">

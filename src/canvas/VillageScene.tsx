@@ -45,7 +45,7 @@ function CameraController({ activeSection, characterPos }: { activeSection: stri
   return null;
 }
 
-// The Walking Avatar (The Boy / Explorer)
+// The Walking Avatar (The Boy / Explorer / Agent Vector)
 function ExplorerAvatar({ targetPos, characterPos }: { targetPos: THREE.Vector3; characterPos: THREE.Vector3 }) {
   const avatarRef = useRef<THREE.Group>(null);
   const bobRef = useRef<number>(0);
@@ -109,6 +109,12 @@ function ExplorerAvatar({ targetPos, characterPos }: { targetPos: THREE.Vector3;
         </mesh>
       </group>
 
+      {/* Holographic scanning aura */}
+      <mesh position={[0, 0.45, 0]}>
+        <cylinderGeometry args={[0.22, 0.22, 0.9, 8]} />
+        <meshBasicMaterial color="#39FF14" wireframe opacity={0.12} transparent />
+      </mesh>
+
       {/* Little feet */}
       <mesh position={[-0.07, 0.05, 0]}>
         <sphereGeometry args={[0.06, 8, 8]} />
@@ -122,24 +128,34 @@ function ExplorerAvatar({ targetPos, characterPos }: { targetPos: THREE.Vector3;
   );
 }
 
-// 3D Procedural Cozy Cottage (ABOUT)
+// 3D Holographic Cozy Cottage (ABOUT)
 function CozyCottage() {
   return (
     <group position={[-3.5, 0, -2.5]}>
       {/* House body */}
       <mesh position={[0, 0.5, 0]} castShadow receiveShadow>
         <boxGeometry args={[1.6, 1.0, 1.2]} />
-        <meshStandardMaterial color="#e5c59e" roughness={0.8} />
+        <meshStandardMaterial color="#2d3748" roughness={0.7} />
+      </mesh>
+      {/* House wireframe bounding overlay */}
+      <mesh position={[0, 0.5, 0]}>
+        <boxGeometry args={[1.62, 1.02, 1.22]} />
+        <meshBasicMaterial color="#39FF14" wireframe opacity={0.15} transparent />
       </mesh>
       {/* Chimney */}
       <mesh position={[-0.5, 1.1, -0.3]} castShadow>
         <boxGeometry args={[0.25, 0.6, 0.25]} />
         <meshStandardMaterial color="#9a3412" />
       </mesh>
-      {/* Terracotta peaked roof */}
+      {/* Peaked roof */}
       <mesh position={[0, 1.15, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
         <coneGeometry args={[1.3, 0.7, 4]} />
-        <meshStandardMaterial color="#dd6b20" roughness={0.5} />
+        <meshStandardMaterial color="#e76f51" roughness={0.5} />
+      </mesh>
+      {/* Roof wireframe overlay */}
+      <mesh position={[0, 1.15, 0]} rotation={[0, Math.PI / 4, 0]}>
+        <coneGeometry args={[1.32, 0.72, 4]} />
+        <meshBasicMaterial color="#39FF14" wireframe opacity={0.15} transparent />
       </mesh>
       {/* Door */}
       <mesh position={[0, 0.35, 0.61]}>
@@ -149,17 +165,17 @@ function CozyCottage() {
       {/* Glowing Warm Windows */}
       <mesh position={[-0.5, 0.6, 0.61]}>
         <planeGeometry args={[0.25, 0.25]} />
-        <meshBasicMaterial color="#ffe066" />
+        <meshBasicMaterial color="#39FF14" />
       </mesh>
       <mesh position={[0.5, 0.6, 0.61]}>
         <planeGeometry args={[0.25, 0.25]} />
-        <meshBasicMaterial color="#ffe066" />
+        <meshBasicMaterial color="#39FF14" />
       </mesh>
     </group>
   );
 }
 
-// 3D Chronology Windmill (EXPERIENCE)
+// 3D Holographic Chronology Windmill (EXPERIENCE)
 function Windmill() {
   const sailRef = useRef<THREE.Group>(null);
 
@@ -174,12 +190,17 @@ function Windmill() {
       {/* Tower base */}
       <mesh position={[0, 1.1, 0]} castShadow receiveShadow>
         <cylinderGeometry args={[0.5, 0.8, 2.2, 8]} />
-        <meshStandardMaterial color="#94a3b8" roughness={0.9} />
+        <meshStandardMaterial color="#4a5568" roughness={0.8} />
+      </mesh>
+      {/* Tower base wireframe overlay */}
+      <mesh position={[0, 1.1, 0]}>
+        <cylinderGeometry args={[0.52, 0.82, 2.22, 8]} />
+        <meshBasicMaterial color="#39FF14" wireframe opacity={0.15} transparent />
       </mesh>
       {/* Conical cap */}
       <mesh position={[0, 2.4, 0]} castShadow>
         <coneGeometry args={[0.62, 0.5, 8]} />
-        <meshStandardMaterial color="#1e293b" />
+        <meshStandardMaterial color="#1a202c" />
       </mesh>
       {/* Rotating sails assembly */}
       <group ref={sailRef} position={[0, 2.1, 0.52]}>
@@ -208,19 +229,24 @@ function Windmill() {
   );
 }
 
-// 3D Projects Workshop (PROJECTS)
+// 3D Holographic Projects Workshop (PROJECTS)
 function ProjectWorkshop() {
   return (
     <group position={[3.0, 0, 2.5]}>
       {/* Workshop main hall */}
       <mesh position={[0, 0.55, 0]} castShadow receiveShadow>
         <boxGeometry args={[1.8, 1.1, 1.6]} />
-        <meshStandardMaterial color="#475569" roughness={0.6} />
+        <meshStandardMaterial color="#1a202c" roughness={0.6} />
+      </mesh>
+      {/* Workshop wireframe overlay */}
+      <mesh position={[0, 0.55, 0]}>
+        <boxGeometry args={[1.82, 1.12, 1.62]} />
+        <meshBasicMaterial color="#39FF14" wireframe opacity={0.15} transparent />
       </mesh>
       {/* Peaked A-frame roof */}
       <mesh position={[0, 1.25, 0]} rotation={[0, 0, Math.PI / 4]} castShadow>
         <boxGeometry args={[1.3, 1.3, 1.7]} />
-        <meshStandardMaterial color="#0284c7" roughness={0.5} />
+        <meshStandardMaterial color="#2d3748" roughness={0.5} />
       </mesh>
       {/* Double wooden barn doors */}
       <mesh position={[0, 0.35, 0.81]}>
@@ -230,7 +256,7 @@ function ProjectWorkshop() {
       {/* Front lights */}
       <mesh position={[0, 0.8, 0.82]}>
         <sphereGeometry args={[0.06, 8, 8]} />
-        <meshBasicMaterial color="#fbbf24" />
+        <meshBasicMaterial color="#39FF14" />
       </mesh>
     </group>
   );
@@ -239,10 +265,10 @@ function ProjectWorkshop() {
 // 3D Skill Orchard / Forest Trees (SKILLS)
 function SkillOrchard() {
   const trees = [
-    { pos: [2.5, 0, -2.5], color: "#f472b6", scale: 0.6, type: "cherry" }, // pink cherry blossom
-    { pos: [3.6, 0, -2.0], color: "#fb923c", scale: 0.5, type: "autumn" },  // autumn orange
-    { pos: [1.8, 0, -1.8], color: "#14b8a6", scale: 0.55, type: "pine" },  // teal pine
-    { pos: [2.8, 0, -1.2], color: "#facc15", scale: 0.45, type: "golden" } // yellow birch
+    { pos: [2.5, 0, -2.5], color: "#39FF14", scale: 0.6, type: "cherry" }, // neon yolo green
+    { pos: [3.6, 0, -2.0], color: "#00F0FF", scale: 0.5, type: "autumn" },  // cyan tracking
+    { pos: [1.8, 0, -1.8], color: "#39FF14", scale: 0.55, type: "pine" },  
+    { pos: [2.8, 0, -1.2], color: "#00F0FF", scale: 0.45, type: "golden" } 
   ];
 
   return (
@@ -252,7 +278,7 @@ function SkillOrchard() {
           {/* Wood trunk */}
           <mesh position={[0, 0.4, 0]} castShadow>
             <cylinderGeometry args={[0.07, 0.1, 0.8, 8]} />
-            <meshStandardMaterial color="#78350f" roughness={0.9} />
+            <meshStandardMaterial color="#451a03" roughness={0.9} />
           </mesh>
           {/* Foliage */}
           {tree.type === "pine" ? (
@@ -266,6 +292,11 @@ function SkillOrchard() {
               <meshStandardMaterial color={tree.color} roughness={0.7} />
             </mesh>
           )}
+          {/* Hologram wireframe overlay */}
+          <mesh position={[0, 0.9, 0]}>
+            <sphereGeometry args={[0.45, 8, 8]} />
+            <meshBasicMaterial color="#39FF14" wireframe opacity={0.12} transparent />
+          </mesh>
         </group>
       ))}
     </group>
@@ -281,16 +312,16 @@ function Mailbox() {
         {/* Seat */}
         <mesh castShadow>
           <boxGeometry args={[0.8, 0.05, 0.35]} />
-          <meshStandardMaterial color="#d97706" />
+          <meshStandardMaterial color="#4a5568" />
         </mesh>
         {/* Legs */}
         <mesh position={[-0.3, -0.1, 0]}>
           <boxGeometry args={[0.04, 0.2, 0.3]} />
-          <meshStandardMaterial color="#1e293b" />
+          <meshStandardMaterial color="#1a202c" />
         </mesh>
         <mesh position={[0.3, -0.1, 0]}>
           <boxGeometry args={[0.04, 0.2, 0.3]} />
-          <meshStandardMaterial color="#1e293b" />
+          <meshStandardMaterial color="#1a202c" />
         </mesh>
       </group>
 
@@ -299,7 +330,7 @@ function Mailbox() {
         {/* Post */}
         <mesh position={[0, 0.3, 0]} castShadow>
           <cylinderGeometry args={[0.03, 0.03, 0.6, 8]} />
-          <meshStandardMaterial color="#7c2d12" />
+          <meshStandardMaterial color="#4a5568" />
         </mesh>
         {/* Mailbox container */}
         <mesh position={[0, 0.65, 0]} castShadow>
@@ -309,7 +340,7 @@ function Mailbox() {
         {/* Flag indicator */}
         <mesh position={[0.1, 0.72, 0.05]}>
           <boxGeometry args={[0.01, 0.1, 0.03]} />
-          <meshBasicMaterial color="#ffffff" />
+          <meshBasicMaterial color="#39FF14" />
         </mesh>
       </group>
     </group>
@@ -320,37 +351,40 @@ function Mailbox() {
 function DirtPaths() {
   return (
     <group>
-      {/* Ground Meadow base */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
-        <planeGeometry args={[20, 20]} />
-        <meshStandardMaterial color="#4f5e2d" roughness={0.9} />
+      {/* Dark Matrix base plane */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]} receiveShadow>
+        <planeGeometry args={[25, 25]} />
+        <meshStandardMaterial color="#0a0a0c" roughness={0.9} />
       </mesh>
 
-      {/* Dirt path planes layered just above ground */}
+      {/* Green cyber grid helper */}
+      <gridHelper args={[26, 26, "#1f5f1f", "#111115"]} position={[0, -0.01, 0]} />
+
+      {/* Dirt path planes layered just above ground (styled dark green-gray traces) */}
       {/* Center to Cottage */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-1.7, 0.001, -1.2]}>
         <planeGeometry args={[3.2, 0.65]} />
-        <meshStandardMaterial color="#cb997e" roughness={0.9} />
+        <meshStandardMaterial color="#142618" roughness={0.9} />
       </mesh>
       {/* Center to Windmill */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-1.0, 0.001, 1.5]}>
         <planeGeometry args={[0.65, 3.0]} />
-        <meshStandardMaterial color="#cb997e" roughness={0.9} />
+        <meshStandardMaterial color="#142618" roughness={0.9} />
       </mesh>
       {/* Center to Projects */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[1.5, 0.001, 1.2]}>
         <planeGeometry args={[3.0, 0.65]} />
-        <meshStandardMaterial color="#cb997e" roughness={0.9} />
+        <meshStandardMaterial color="#142618" roughness={0.9} />
       </mesh>
       {/* Center to Skills */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[1.6, 0.001, -1.0]}>
         <planeGeometry args={[3.2, 0.65]} />
-        <meshStandardMaterial color="#cb997e" roughness={0.9} />
+        <meshStandardMaterial color="#142618" roughness={0.9} />
       </mesh>
       {/* Center to Mailbox */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.001, 2.0]}>
         <planeGeometry args={[0.65, 4.0]} />
-        <meshStandardMaterial color="#cb997e" roughness={0.9} />
+        <meshStandardMaterial color="#142618" roughness={0.9} />
       </mesh>
     </group>
   );
@@ -359,11 +393,11 @@ function DirtPaths() {
 // Glowing Fireflies hovering over Orchard/Cottage
 function Fireflies() {
   const points = useMemo(() => {
-    return Array.from({ length: 15 }).map(() => ({
+    return Array.from({ length: 20 }).map(() => ({
       pos: new THREE.Vector3(
-        THREE.MathUtils.randFloatSpread(12),
-        THREE.MathUtils.randFloat(0.3, 1.5),
-        THREE.MathUtils.randFloatSpread(12)
+        THREE.MathUtils.randFloatSpread(15),
+        THREE.MathUtils.randFloat(0.3, 2.0),
+        THREE.MathUtils.randFloatSpread(15)
       ),
       seed: Math.random() * 100,
     }));
@@ -376,8 +410,8 @@ function Fireflies() {
       const mesh = meshRefs.current[i];
       if (!mesh) return;
       const t = state.clock.getElapsedTime();
-      mesh.position.y = pt.pos.y + Math.sin(t * 1.5 + pt.seed) * 0.15;
-      mesh.position.x = pt.pos.x + Math.cos(t * 0.5 + pt.seed) * 0.1;
+      mesh.position.y = pt.pos.y + Math.sin(t * 1.5 + pt.seed) * 0.25;
+      mesh.position.x = pt.pos.x + Math.cos(t * 0.5 + pt.seed) * 0.15;
     });
   });
 
@@ -391,8 +425,8 @@ function Fireflies() {
           }}
           position={pt.pos}
         >
-          <sphereGeometry args={[0.03, 8, 8]} />
-          <meshBasicMaterial color="#c0ff7d" />
+          <sphereGeometry args={[0.045, 8, 8]} />
+          <meshBasicMaterial color="#39FF14" />
         </mesh>
       ))}
     </group>
@@ -411,18 +445,18 @@ export default function VillageScene({ activeSection }: VillageSceneProps) {
         style={{ background: "transparent" }}
         shadows
       >
-        <ambientLight intensity={0.45} color="#d4e6f1" />
-        {/* Soft Golden Sun Light */}
+        <ambientLight intensity={0.25} color="#1f5f1f" />
+        {/* Soft Cybernetic Neon Lights */}
         <directionalLight
           position={[8, 12, 4]}
-          intensity={1.8}
-          color="#ffe8cc"
+          intensity={1.5}
+          color="#39FF14"
           castShadow
           shadow-mapSize-width={1024}
           shadow-mapSize-height={1024}
         />
-        {/* Soft Blue fill light */}
-        <directionalLight position={[-8, -5, -4]} intensity={0.4} color="#60a5fa" />
+        {/* Soft Cyan fill light */}
+        <directionalLight position={[-8, -5, -4]} intensity={0.5} color="#00F0FF" />
         
         <CameraController activeSection={activeSection} characterPos={characterPos} />
         <DirtPaths />
