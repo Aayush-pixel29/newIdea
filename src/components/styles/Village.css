@@ -1364,6 +1364,165 @@
   animation: fadeIn 0.4s ease-out forwards;
 }
 
+/* 3D HTML Nameplates */
+.npc-nameplate {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1.5px solid #fbbf24;
+  border-radius: 4px;
+  padding: 4px 10px;
+  text-align: center;
+  font-family: monospace;
+  white-space: nowrap;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  user-select: none;
+}
+
+.npc-title {
+  font-size: 9.5px;
+  font-weight: bold;
+  color: #fbbf24;
+  letter-spacing: 0.5px;
+}
+
+.npc-subtitle {
+  font-size: 8px;
+  color: #cbd5e1;
+  margin-top: 1px;
+}
+
+.player-nameplate {
+  background: rgba(234, 88, 12, 0.9);
+  border: 1px solid #ffedd5;
+  border-radius: 3px;
+  padding: 2px 8px;
+  font-family: monospace;
+  font-size: 8px;
+  font-weight: bold;
+  color: #ffffff;
+  white-space: nowrap;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Cozy Quest Diary Panel (Right Column) */
+.cozy-quest-diary {
+  position: fixed;
+  top: 100px;
+  right: 40px;
+  width: 260px;
+  background: #fdfaf2;
+  border: 3px solid #3f2a14;
+  border-radius: 6px;
+  padding: 16px;
+  z-index: 85;
+  box-sizing: border-box;
+  font-family: monospace;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.diary-header {
+  font-size: 11px;
+  font-weight: bold;
+  color: #7c2d12;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+  border-bottom: 1.5px solid #e6d8b8;
+  padding-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.diary-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.diary-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  color: #5c3d2e;
+}
+
+.diary-item.completed {
+  text-decoration: line-through;
+  color: #9ca3af;
+}
+
+.diary-item span:first-child {
+  font-size: 13px;
+  font-weight: bold;
+  color: #d97706;
+}
+
+.diary-summary {
+  font-size: 10px;
+  font-weight: bold;
+  color: #7c2d12;
+  text-align: right;
+  border-top: 1px dashed #e6d8b8;
+  padding-top: 6px;
+}
+
+/* Cozy RPG Dialogue Box HUD (Replaces bottom terminal console) */
+.rpg-dialogue-box-hud {
+  position: fixed;
+  bottom: 65px;
+  left: 40px;
+  width: 280px;
+  height: 180px;
+  background: #fdfaf2;
+  border: 3px solid #3f2a14;
+  border-radius: 6px;
+  padding: 14px;
+  z-index: 95;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  pointer-events: auto;
+}
+
+.dialogue-header {
+  font-size: 10px;
+  font-weight: bold;
+  color: #7c2d12;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1.5px solid #e6d8b8;
+  padding-bottom: 4px;
+}
+
+.dialogue-dot {
+  width: 6px;
+  height: 6px;
+  background: #22c55e;
+  border-radius: 50%;
+}
+
+.dialogue-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.dialogue-text {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #3f2a14;
+  margin: 0;
+  font-family: inherit;
+  text-align: justify;
+}
+
+
 
 
 

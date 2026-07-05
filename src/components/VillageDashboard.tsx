@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { MdArrowOutward, MdCopyright, MdHome, MdMap, MdFileDownload, MdPlayArrow, MdSkipNext, MdRefresh } from "react-icons/md";
+import { useState, useEffect } from "react";
+import { MdArrowOutward, MdCopyright, MdHome, MdMap, MdFileDownload, MdPlayArrow, MdSkipNext, MdRefresh, MdAssignment } from "react-icons/md";
 import { FaHome, FaTree, FaWind, FaHammer, FaAward, FaGraduationCap, FaHandsHelping, FaCog, FaUnlockAlt } from "react-icons/fa";
 import TechStack from "./TechStack";
 import VillageScene from "../canvas/VillageScene";
@@ -71,42 +71,14 @@ const projectTelemetry = [
   },
 ];
 
-const telemetryLogPool = [
-  "[SYS] Loading YOLOv8 weights... Success",
-  "[MAITRI] Monitoring sentiment vectors... Optimal",
-  "[IoT] Cable sensor matrix ping... Status 200",
-  "[YOLO] Classified Cottage: 0.99 Confidence",
-  "[YOLO] Classified Windmill: 0.98 Confidence",
-  "[SYS] Core temperature stabilized at 42°C",
-  "[ML] Pipeline throughput: 62.4 FPS",
-  "[SYS] Memory Allocation: 74% [OK]",
-  "[AVR] Potential Divider calibration... Ready",
-  "[NLP] Dialogue agents online. RAG DB loaded.",
-];
-
 export default function VillageDashboard() {
   const [activeSection, setActiveSection] = useState<string>("overview");
   const [selectedProject, setSelectedProject] = useState<number>(0);
   const [questTitle, setQuestTitle] = useState<string>("Active Quest: Explore the Village");
   const [isCrtOn, setIsCrtOn] = useState<boolean>(false);
-  const [tickerLogs, setTickerLogs] = useState<string[]>([
-    "[SYS] Loading YOLOv8 weights... Success",
-    "[MAITRI] Monitoring sentiment vectors... Optimal",
-    "[IoT] Cable sensor matrix ping... Status 200",
-  ]);
-
-  // Terminal State
-  const [terminalInput, setTerminalInput] = useState<string>("");
-  const [terminalLogs, setTerminalLogs] = useState<string[]>([
-    "Initializing Aayush_OS v2.6...",
-    "Capabilities: Computer Vision, Embedded IoT, Local-first AI.",
-    "Type 'help' for databank system commands.",
-  ]);
-  
-  const terminalEndRef = useRef<HTMLDivElement>(null);
 
   // Zustand Store
-  const { phase, activeChallenge, setPhase, enterZone, leaveZone, solveChallenge, resetGame } = useGameStore();
+  const { phase, activeChallenge, completedChallenges, setPhase, enterZone, leaveZone, solveChallenge, resetGame } = useGameStore();
 
   // Challenge Local State Parameters
   const [bioScanProgress, setBioScanProgress] = useState<number>(0);
@@ -122,21 +94,6 @@ export default function VillageDashboard() {
       enterZone(activeSection);
     }
   }, [activeSection, phase, enterZone]);
-
-  // Telemetry Log stream interval
-  useEffect(() => {
-    const logInterval = setInterval(() => {
-      const randomLog = telemetryLogPool[Math.floor(Math.random() * telemetryLogPool.length)];
-      setTickerLogs((prev) => {
-        const next = [...prev, randomLog];
-        if (next.length > 8) {
-          next.shift();
-        }
-        return next;
-      });
-    }, 2800);
-    return () => clearInterval(logInterval);
-  }, []);
 
   // Update Quest status tags
   useEffect(() => {
@@ -160,13 +117,6 @@ export default function VillageDashboard() {
         setQuestTitle("Quest: Walk the Pathway");
     }
   }, [activeSection]);
-
-  // Terminal scroll helper
-  useEffect(() => {
-    if (terminalEndRef.current) {
-      terminalEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [terminalLogs]);
 
   // Bioscan Progress simulation
   useEffect(() => {
@@ -215,84 +165,27 @@ export default function VillageDashboard() {
     }
   }, [activeChallenge]);
 
-  // Interactive Command Terminal logic
-  const handleCommand = (e: React.FormEvent) => {
-    e.preventDefault();
-    const cmd = terminalInput.trim();
-    if (!cmd) return;
-
-    const trimmed = cmd.toLowerCase();
-    let response: string[] = [];
-
-    if (trimmed === "help") {
-      response = [
-        "Available operations:",
-        "  help         - Show OS operations",
-        "  cat resume   - Output academic & experience logs",
-        "  status       - Inspect mechatronic core diagnostics",
-        "  goto <zone>  - Relocate: cottage | orchard | windmill | workshop | square",
-        "  clear        - Flush terminal buffer",
-      ];
-    } else if (trimmed === "cat resume") {
-      response = [
-        "AAYUSH SHELAR - ELECTRONICS & COMPUTER ENGINEER",
-        "GPA Coef: 6.73 / 10.00",
-        "Timeline entries:",
-        "  - SEDEMAC Mechatronics Ltd. [Support Engineer Intern, 2026]",
-        "  - Rapid System [Developer Intern, 2024]",
-        "Community: Event Head at DSC ECESA (1500+ Peers coached)",
-      ];
-    } else if (trimmed === "status") {
-      response = [
-        "OS Telemetry Status:",
-        "  MEM_ALLOC       : 74% [OK]",
-        "  SIGNAL_STRENGTH : 92% [OPTIMAL]",
-        "  CORE_TEMP       : 42°C [STABLE]",
-        "  LOCAL_MODEL     : ACTIVE (OFFLINE)",
-      ];
-    } else if (trimmed.startsWith("goto ")) {
-      const zone = trimmed.replace("goto ", "").trim();
-      if (zone === "cottage" || zone === "about") {
-        setActiveSection("about");
-        enterZone("about");
-        response = ["Relocating vector to [🏡 COZY COTTAGE]..."];
-      } else if (zone === "orchard" || zone === "tech" || zone === "skills") {
-        setActiveSection("tech");
-        enterZone("tech");
-        response = ["Relocating vector to [🌲 SKILL ORCHARD]..."];
-      } else if (zone === "windmill" || zone === "experience") {
-        setActiveSection("experience");
-        enterZone("experience");
-        response = ["Relocating vector to [💨 WINDMILL LOGS]..."];
-      } else if (zone === "workshop" || zone === "projects" || zone === "work") {
-        setActiveSection("projects");
-        enterZone("projects");
-        response = ["Relocating vector to [🔨 WORKSHOP BLUEPRINTS]..."];
-      } else if (zone === "square" || zone === "overview" || zone === "map") {
-        setActiveSection("overview");
-        response = ["Relocating vector to [🗺️ VILLAGE SQUARE]..."];
-      } else {
-        response = [`Sector [${zone}] unrecognized. Select active nodes.`];
-      }
-    } else if (trimmed === "clear") {
-      setTerminalLogs([]);
-      setTerminalInput("");
-      return;
-    } else {
-      response = [`Command '${cmd}' not recognized. Type 'help' for instructions.`];
-    }
-
-    setTerminalLogs((prev) => [...prev, `> ${cmd}`, ...response]);
-    setTerminalInput("");
-  };
-
   const handleHarvestFruit = (skill: string) => {
     if (!harvestedSkills.includes(skill)) {
       setHarvestedSkills((prev) => [...prev, skill]);
     }
   };
 
-
+  // Generate Hiring Manager Guide lines dynamically
+  const getNpcDialogue = () => {
+    switch (activeSection) {
+      case "about":
+        return "Manager: 'Inside this Cozy Cottage lies Aayush's biography databank. Perform a security credential bioscan to verify your authorization and unseal his academic profile!'";
+      case "tech":
+        return "Manager: 'Welcome to the Skill Orchard! Grab and harvest at least 3 skill fruits to confirm his engineering stack and activate the Orchard physics bubble canvas.'";
+      case "experience":
+        return "Manager: 'The Windmill registers time records. Align the timeline gear cogs to synchronize clock logs and unlock his professional internship history!'";
+      case "projects":
+        return "Manager: 'The Workshop logs blueprints of major mechatronic systems. Select an archive blueprint and initiate code decryption to verify his AI and computer vision files!'";
+      default:
+        return "Manager: 'Greetings, Recruiter! Use the WASD or Arrow keys to walk around my village, or click signposts on the left. Approach the cottages and windmills to unseal Aayush's achievements!'";
+    }
+  };
 
   // ----------------------------------------------------
   // RENDER PHASE: 1. INTRO CINEMATIC ARCADE SCREEN
@@ -651,13 +544,31 @@ export default function VillageDashboard() {
         </ul>
       </nav>
 
-      {/* Live Telemetry Ticker stream on right margin */}
-      <div className="telemetry-log-ticker" data-cursor="disable">
-        <div className="ticker-title">LIVE TELEMETRY STREAM</div>
-        <div className="ticker-scroll">
-          {tickerLogs.map((log, idx) => (
-            <div key={idx} className="ticker-line fade-in">{log}</div>
-          ))}
+      {/* Cozy Quest Diary Panel (Replaces cyber log ticker) */}
+      <div className="cozy-quest-diary" data-cursor="disable">
+        <div className="diary-header">
+          <MdAssignment /> ACTIVE QUEST DIARY
+        </div>
+        <div className="diary-checklist">
+          <div className={`diary-item ${completedChallenges.includes("about") ? "completed" : ""}`}>
+            <span>{completedChallenges.includes("about") ? "☑" : "☐"}</span>
+            <span>🏡 Cottage: Unseal Bio Logs</span>
+          </div>
+          <div className={`diary-item ${completedChallenges.includes("tech") ? "completed" : ""}`}>
+            <span>{completedChallenges.includes("tech") ? "☑" : "☐"}</span>
+            <span>🌲 Orchard: Harvest Skills</span>
+          </div>
+          <div className={`diary-item ${completedChallenges.includes("experience") ? "completed" : ""}`}>
+            <span>{completedChallenges.includes("experience") ? "☑" : "☐"}</span>
+            <span>💨 Windmill: Align Timeline cogs</span>
+          </div>
+          <div className={`diary-item ${completedChallenges.includes("projects") ? "completed" : ""}`}>
+            <span>{completedChallenges.includes("projects") ? "☑" : "☐"}</span>
+            <span>🔨 Workshop: Decrypt Blueprints</span>
+          </div>
+        </div>
+        <div className="diary-summary">
+          COMPLETED: {completedChallenges.length} / 4 QUESTS
         </div>
       </div>
 
@@ -737,6 +648,7 @@ export default function VillageDashboard() {
             {activeChallenge === "experience" && (
               <>
                 <h3 className="challenge-title">💨 WINDMILL CHALLENGE: TIMELINE GEAR SYNC</h3>
+                <h3 className="challenge-title" style={{ fontSize: "12px", marginTop: "-8px", border: "none" }}>SEDEMAC INTERN LOG: 2026</h3>
                 <p className="challenge-desc">
                   Stabilize the rotating windmill timeline gears. Spin gears to match clock metrics.
                 </p>
@@ -824,28 +736,17 @@ export default function VillageDashboard() {
         </div>
       )}
 
-      {/* Interactive Command Terminal */}
-      <div className="rpg-terminal-console" data-cursor="disable">
-        <div className="terminal-header">
-          <div className="terminal-dot"></div>
-          <span>Aayush_OS v2.6 // LOCAL INPUT MATRIX</span>
+      {/* Cozy RPG Dialogue Box HUD (Replaces the dark terminal console) */}
+      <div className="rpg-dialogue-box-hud" data-cursor="disable">
+        <div className="dialogue-header">
+          <div className="dialogue-dot animate-pulse"></div>
+          <span>VILLAGE VISUAL DIALOGUE LOG</span>
         </div>
-        <div className="terminal-output">
-          {terminalLogs.map((log, idx) => (
-            <div key={idx} className="terminal-line">{log}</div>
-          ))}
-          <div ref={terminalEndRef} />
+        <div className="dialogue-content">
+          <p className="dialogue-text">
+            {getNpcDialogue()}
+          </p>
         </div>
-        <form onSubmit={handleCommand} className="terminal-form">
-          <span className="prompt-symbol">&gt;</span>
-          <input
-            type="text"
-            value={terminalInput}
-            onChange={(e) => setTerminalInput(e.target.value)}
-            placeholder="Type 'help' to check databank operations..."
-            className="terminal-input"
-          />
-        </form>
       </div>
 
       <footer className="village-footer">
